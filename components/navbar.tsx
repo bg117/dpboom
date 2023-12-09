@@ -1,23 +1,17 @@
 'use client'
 
 import Link from "next/link";
-import React, {useEffect, useState} from "react";
-import {client} from "@/utils/supabase";
+import useSession from "@/hooks/useSession";
+import {ReactNode} from "react";
 
-function NavLink({href, children}: { href: string, children: React.ReactNode }) {
+function NavLink({href, children}: { href: string, children: ReactNode }) {
     return <li className="nav-item">
         <Link className="nav-link active" href={href}>{children}</Link>
     </li>;
 }
 
 export function Navbar() {
-    const [loggedIn, setLoggedIn] = useState(false);
-
-    useEffect(() => {
-        client.auth.onAuthStateChange((_, session) => {
-            setLoggedIn(session !== null);
-        })
-    }, []);
+    const {session} = useSession();
 
     return <nav className="navbar navbar-expand-lg bg-success-subtle">
         <div className="container">
@@ -29,7 +23,7 @@ export function Navbar() {
             </button>
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-                    {loggedIn ? <>
+                    {session ? <>
                         <NavLink href="/events">Events</NavLink>
                         <NavLink href="/logout">Logout</NavLink>
                     </> : <>
