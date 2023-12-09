@@ -4,6 +4,12 @@ import Link from "next/link";
 import React, {useEffect, useState} from "react";
 import {client} from "@/utils/supabase";
 
+function NavLink({href, children}: { href: string, children: React.ReactNode }) {
+    return <li className="nav-item">
+        <Link className="nav-link active" href={href}>{children}</Link>
+    </li>;
+}
+
 export function Navbar() {
     const [loggedIn, setLoggedIn] = useState(false);
 
@@ -23,15 +29,12 @@ export function Navbar() {
             </button>
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-                    {loggedIn ? <li className="nav-item">
-                        <Link className="nav-link active" href="/events">Events</Link>
-                    </li> : <>
-                        <li className="nav-item">
-                            <Link className="nav-link active" href="/login">Login</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link active" href="/register">Register</Link>
-                        </li>
+                    {loggedIn ? <>
+                        <NavLink href="/events">Events</NavLink>
+                        <NavLink href="/logout">Logout</NavLink>
+                    </> : <>
+                        <NavLink href="/login">Login</NavLink>
+                        <NavLink href="/register">Register</NavLink>
                     </>}
                 </ul>
             </div>
