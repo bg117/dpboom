@@ -8,6 +8,7 @@ import {Alert, Button, Card, Form} from "react-bootstrap";
 
 export default function Register() {
     const [error, setError] = useState<string | null>(null);
+    const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -33,8 +34,9 @@ export default function Register() {
 
                 router.push('/');
             });
-    }, [email, password, confirmPassword]);
+    }, [router, email, password, confirmPassword]);
 
+    const changeName = useCallback((e: ChangeEvent<HTMLInputElement>) => setName(e.currentTarget.value), []);
     const changeEmail = useCallback((e: ChangeEvent<HTMLInputElement>) => setEmail(e.currentTarget.value), []);
     const changePassword = useCallback((e: ChangeEvent<HTMLInputElement>) => setPassword(e.currentTarget.value), []);
     const changeConfirmPassword = useCallback((e: ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.currentTarget.value), []);
@@ -46,6 +48,11 @@ export default function Register() {
                     <Card.Title as="h2">Register</Card.Title>
                     {error && <Alert variant="danger">{error}</Alert>}
                     <Form onSubmit={handleSubmit}>
+                        <Form.Group className="mb-3" controlId="name">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control type="text" placeholder="Name" onChange={changeName}/>
+                        </Form.Group>
+
                         <Form.Group className="mb-3" controlId="email">
                             <Form.Label>Email</Form.Label>
                             <Form.Control type="email" placeholder="Email" onChange={changeEmail}/>
@@ -58,7 +65,8 @@ export default function Register() {
 
                         <Form.Group className="mb-3" controlId="confirmPassword">
                             <Form.Label>Confirm Password</Form.Label>
-                            <Form.Control type="password" placeholder="Confirm Password" onChange={changeConfirmPassword}/>
+                            <Form.Control type="password" placeholder="Confirm Password"
+                                          onChange={changeConfirmPassword}/>
                         </Form.Group>
 
                         <Button variant="primary" type="submit">

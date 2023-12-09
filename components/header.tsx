@@ -1,8 +1,8 @@
 'use client'
 
 import Link from "next/link";
-import useSession from "@/hooks/useSession";
-import React, {ReactNode, MouseEvent, useCallback} from "react";
+import {useSession} from "@/hooks/session";
+import {ReactNode, MouseEvent, useCallback} from "react";
 import {Container, Nav, Navbar} from "react-bootstrap";
 
 function HeaderLink({href, children, LinkProps}: { href: string, children: ReactNode, LinkProps?: any }) {
