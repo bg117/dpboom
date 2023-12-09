@@ -22,9 +22,12 @@ export function Navbar() {
                 <span className="navbar-toggler-icon"></span>
             </button>
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                    <NavLink href="/events">Events</NavLink>
+                </ul>
                 <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                     {session ? <>
-                        <NavLink href="/events">Events</NavLink>
+                        <NavLink href="/profile">Profile</NavLink>
                         <NavLink href="/logout">Logout</NavLink>
                     </> : <>
                         <NavLink href="/login">Login</NavLink>
