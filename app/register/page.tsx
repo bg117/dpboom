@@ -1,9 +1,10 @@
 'use client';
 
 import {Content} from "@/components/content";
-import {FormEvent, useCallback, useState} from "react";
+import {ChangeEvent, FormEvent, useCallback, useState} from "react";
 import {client} from "@/utils/supabase";
 import {useRouter} from "next/navigation";
+import {Alert, Button, Card, Form} from "react-bootstrap";
 
 export default function Register() {
     const [error, setError] = useState<string | null>(null);
@@ -17,7 +18,7 @@ export default function Register() {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match!');
+            setError('Passwords do not match');
             return;
         }
 
@@ -34,36 +35,38 @@ export default function Register() {
             });
     }, [email, password, confirmPassword]);
 
-    const changeEmail = useCallback((e: FormEvent<HTMLInputElement>) => setEmail(e.currentTarget.value), []);
-    const changePassword = useCallback((e: FormEvent<HTMLInputElement>) => setPassword(e.currentTarget.value), []);
-    const changeConfirmPassword = useCallback((e: FormEvent<HTMLInputElement>) => setConfirmPassword(e.currentTarget.value), []);
+    const changeEmail = useCallback((e: ChangeEvent<HTMLInputElement>) => setEmail(e.currentTarget.value), []);
+    const changePassword = useCallback((e: ChangeEvent<HTMLInputElement>) => setPassword(e.currentTarget.value), []);
+    const changeConfirmPassword = useCallback((e: ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.currentTarget.value), []);
 
     return <Content>
         <div className="flex-grow-1 d-flex flex-column justify-content-center">
-            <div className="card grid">
-                <div className="card-body">
-                    <h1 className="card-title">Register</h1>
-                    {error && <div className="alert alert-danger">{error}</div>}
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label htmlFor="email" className="form-label">Email</label>
-                            <input type="email" className="form-control" id="email" placeholder="Email"
-                                   onChange={changeEmail}/>
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="password" className="form-label">Password</label>
-                            <input type="password" className="form-control" id="password" placeholder="Password"
-                                   onChange={changePassword}/>
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="password" className="form-label">Confirm Password</label>
-                            <input type="password" className="form-control" id="password" placeholder="Password"
-                                   onChange={changeConfirmPassword}/>
-                        </div>
-                        <button type="submit" className="btn btn-primary">Submit</button>
-                    </form>
-                </div>
-            </div>
+            <Card className="grid">
+                <Card.Body>
+                    <Card.Title as="h2">Register</Card.Title>
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group className="mb-3" controlId="email">
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control type="email" placeholder="Email" onChange={changeEmail}/>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="password">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control type="password" placeholder="Password" onChange={changePassword}/>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="confirmPassword">
+                            <Form.Label>Confirm Password</Form.Label>
+                            <Form.Control type="password" placeholder="Confirm Password" onChange={changeConfirmPassword}/>
+                        </Form.Group>
+
+                        <Button variant="primary" type="submit">
+                            Submit
+                        </Button>
+                    </Form>
+                </Card.Body>
+            </Card>
         </div>
     </Content>;
 }

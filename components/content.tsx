@@ -1,11 +1,12 @@
 import React from "react";
-import {Navbar} from "@/components/navbar";
+import {Header} from "@/components/header";
+import {Container} from "react-bootstrap";
 
 export function Content({children}: { children: React.ReactNode }) {
     return <div className="d-flex flex-column min-vh-100">
-        <Navbar/>
-        <main className="flex-grow-1 d-flex flex-column container pt-4">
+        <Header/>
+        <Container className="flex-grow-1 d-flex flex-column pt-4">
             {children}
-        </main>
+        </Container>
     </div>;
 }
