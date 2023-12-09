@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {Session} from "@supabase/supabase-js";
 
 export default function useSession() {
-    const [session, setSession] = useState<Session | null>(null)
+    const [session, setSession] = useState<Session | "loading" | null>("loading")
 
     useEffect(() => {
         client.auth.onAuthStateChange((event, session) => {
@@ -11,5 +11,5 @@ export default function useSession() {
         });
     }, []);
 
-    return { session }
+    return { session, client }
 }

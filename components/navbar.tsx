@@ -2,16 +2,22 @@
 
 import Link from "next/link";
 import useSession from "@/hooks/useSession";
-import {ReactNode} from "react";
+import {ReactNode, MouseEvent, useCallback} from "react";
 
-function NavLink({href, children}: { href: string, children: ReactNode }) {
+function NavLink({href, children, LinkProps}: { href: string, children: ReactNode, LinkProps?: any }) {
     return <li className="nav-item">
-        <Link className="nav-link active" href={href}>{children}</Link>
+        <Link className="nav-link active" href={href} {...LinkProps}>{children}</Link>
     </li>;
 }
 
 export function Navbar() {
-    const {session} = useSession();
+    const {session, client} = useSession();
+
+    const handleLogout = useCallback((e: MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        e.preventDefault();
+        client.auth.signOut()
+            .then()
+    }, [client]);
 
     return <nav className="navbar navbar-expand-lg bg-success-subtle">
         <div className="container">
@@ -28,7 +34,9 @@ export function Navbar() {
                 <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                     {session ? <>
                         <NavLink href="/profile">Profile</NavLink>
-                        <NavLink href="/logout">Logout</NavLink>
+                        <NavLink href="/logout" LinkProps={{
+                            onClick: handleLogout
+                        }}>Logout</NavLink>
                     </> : <>
                         <NavLink href="/login">Login</NavLink>
                         <NavLink href="/register">Register</NavLink>
