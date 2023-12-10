@@ -1,7 +1,6 @@
 import React from "react";
 
-import 'bootstrap/dist/css/bootstrap.min.css'
-import './globals.css'
+import './globals.scss'
 
 export default function RootLayout({
                                        children,
