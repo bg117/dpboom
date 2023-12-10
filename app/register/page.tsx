@@ -44,7 +44,7 @@ export default function Register() {
         }
 
         router.push('/');
-    }, [router, email, password, confirmPassword]);
+    }, [name, router, email, password, confirmPassword]);
 
     const changeName = useCallback((e: ChangeEvent<HTMLInputElement>) => setName(e.currentTarget.value), []);
     const changeEmail = useCallback((e: ChangeEvent<HTMLInputElement>) => setEmail(e.currentTarget.value), []);
