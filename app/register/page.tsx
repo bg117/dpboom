@@ -17,11 +17,11 @@ export default function Register() {
     const router = useRouter();
 
     const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         const form = e.currentTarget;
 
         setValidated(true);
         if (!form.checkValidity()) {
-            e.preventDefault();
             e.stopPropagation();
             return;
         }
@@ -43,7 +43,7 @@ export default function Register() {
             .from('profiles')
             .insert({
                 display_name: name,
-                user_id: data.user?.id,
+                user_id: data.user!.id,
             });
 
         if (profileError) {

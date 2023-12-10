@@ -15,11 +15,11 @@ export default function Login() {
     const router = useRouter();
 
     const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         const form = e.currentTarget;
 
         setValidated(true);
         if (!form.checkValidity()) {
-            e.preventDefault();
             e.stopPropagation();
             return;
         }
