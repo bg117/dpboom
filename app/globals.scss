@@ -1,1 +1,6 @@
 @import "bootstrap/scss/bootstrap";
+
+div.required > .form-label:after {
+  content: " *";
+  color: red;
+}
