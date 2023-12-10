@@ -15,7 +15,7 @@ export default function Register() {
 
     const router = useRouter();
 
-    const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
@@ -25,15 +25,25 @@ export default function Register() {
 
         setError(null);
 
-        client.auth.signUp({email, password})
-            .then(({error}) => {
-                if (error) {
-                    setError(error.message);
-                    return;
-                }
+        const {data, error} = await client.auth.signUp({email, password});
+        if (error) {
+            setError(error.message);
+            return;
+        }
 
-                router.push('/');
-            });
+        const {error: profileError} = await client
+            .from('profiles')
+            .insert([{
+                display_name: name,
+                user_id: data.user?.id,
+            }]);
+
+        if (profileError) {
+            setError(profileError.message);
+            return;
+        }
+
+        router.push('/');
     }, [router, email, password, confirmPassword]);
 
     const changeName = useCallback((e: ChangeEvent<HTMLInputElement>) => setName(e.currentTarget.value), []);
