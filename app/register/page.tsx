@@ -41,10 +41,10 @@ export default function Register() {
 
         const {error: profileError} = await client
             .from('profiles')
-            .insert([{
+            .insert({
                 display_name: name,
                 user_id: data.user?.id,
-            }]);
+            });
 
         if (profileError) {
             setError(profileError.message);
