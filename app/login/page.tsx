@@ -13,21 +13,20 @@ export default function Login() {
 
     const router = useRouter();
 
-    const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         setError(null);
 
-        client.auth.signInWithPassword({email, password})
-            .then(({error}) => {
-                if (error) {
-                    setError(error.message);
-                    return;
-                }
+        const {error} = await client.auth.signInWithPassword({email, password});
 
-                router.push('/');
-            });
-    }, [email, password]);
+        if (error) {
+            setError(error.message);
+            return;
+        }
+
+        router.push('/');
+    }, [router, email, password]);
 
     const changeEmail = useCallback((e: ChangeEvent<HTMLInputElement>) => setEmail(e.currentTarget.value), []);
     const changePassword = useCallback((e: ChangeEvent<HTMLInputElement>) => setPassword(e.currentTarget.value), []);

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {useSession} from "@/hooks/session";
-import {ReactNode, MouseEvent, useCallback, useState} from "react";
+import {ReactNode, useCallback, useState, useEffect} from "react";
 import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 
 function HeaderLink({href, children, LinkProps}: { href: string, children: ReactNode, LinkProps?: any }) {
@@ -15,25 +15,29 @@ export function Header() {
     const [name, setName] = useState<string>('');
     const {session, client} = useSession();
 
-    const handleLogout = useCallback((e: any) => {
+    const handleLogout = useCallback(async (e: any) => {
         e.preventDefault();
-        client.auth.signOut()
-            .then()
+        await client.auth.signOut();
     }, [client]);
 
-    if (session) {
-        // get profile name from user table
-        client.from('profiles')
-            .select('display_name')
-            .eq('user_id', session.user.id)
-            .limit(1)
-            .single()
-            .then(({data}) => {
-                if (data) {
-                    setName(data.display_name);
-                }
-            });
-    }
+    const getName = useCallback(async () => {
+        if (session) {
+            // get profile name from user table
+            const {data} = await client.from('profiles')
+                .select('display_name')
+                .eq('user_id', session.user.id)
+                .limit(1)
+                .single();
+
+            if (data) {
+                setName(data.display_name);
+            }
+        }
+    }, [client, session]);
+
+    useEffect(() => {
+        getName().then();
+    }, [getName]);
 
     return <Navbar expand="lg" collapseOnSelect className="bg-success-subtle">
         <Container>
