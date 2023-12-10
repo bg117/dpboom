@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
 import Link from "next/link";
 import {useSession} from "@/hooks/session";
-import {ReactNode, MouseEvent, useCallback} from "react";
-import {Container, Nav, Navbar} from "react-bootstrap";
+import {ReactNode, MouseEvent, useCallback, useState} from "react";
+import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 
 function HeaderLink({href, children, LinkProps}: { href: string, children: ReactNode, LinkProps?: any }) {
     return <Nav.Item>
@@ -12,13 +12,28 @@ function HeaderLink({href, children, LinkProps}: { href: string, children: React
 }
 
 export function Header() {
+    const [name, setName] = useState<string>('');
     const {session, client} = useSession();
 
-    const handleLogout = useCallback((e: MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    const handleLogout = useCallback((e: any) => {
         e.preventDefault();
         client.auth.signOut()
             .then()
     }, [client]);
+
+    if (session) {
+        // get profile name from user table
+        client.from('profiles')
+            .select('display_name')
+            .eq('user_id', session.user.id)
+            .limit(1)
+            .single()
+            .then(({data}) => {
+                if (data) {
+                    setName(data.display_name);
+                }
+            });
+    }
 
     return <Navbar expand="lg" collapseOnSelect className="bg-success-subtle">
         <Container>
@@ -30,10 +45,11 @@ export function Header() {
                 </Nav>
                 <Nav className="ms-auto mb-2 mb-lg-0">
                     {session ? <>
-                        <HeaderLink href="/profile">Profile</HeaderLink>
-                        <HeaderLink href="/logout" LinkProps={{
-                            onClick: handleLogout
-                        }}>Logout</HeaderLink>
+                        <NavDropdown title={name} id="basic-nav-dropdown">
+                            <NavDropdown.Item as={Link} href="/profile">Profile</NavDropdown.Item>
+                            <NavDropdown.Divider/>
+                            <NavDropdown.Item as={Link} href="#" onClick={handleLogout}>Logout</NavDropdown.Item>
+                        </NavDropdown>
                     </> : <>
                         <HeaderLink href="/login">Login</HeaderLink>
                         <HeaderLink href="/register">Register</HeaderLink>
