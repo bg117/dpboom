@@ -10,11 +10,19 @@ export default function Login() {
     const [error, setError] = useState<string | null>(null);
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [validated, setValidated] = useState(false);
 
     const router = useRouter();
 
     const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        const form = e.currentTarget;
+
+        setValidated(true);
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
 
         setError(null);
 
@@ -37,15 +45,21 @@ export default function Login() {
                 <Card.Body>
                     <Card.Title as="h2">Login</Card.Title>
                     {error && <Alert variant="danger">{error}</Alert>}
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3" controlId="email">
+                    <Form onSubmit={handleSubmit} noValidate validated={validated}>
+                        <Form.Group className="mb-3 required" controlId="email">
                             <Form.Label>Email</Form.Label>
-                            <Form.Control type="email" placeholder="Email" onChange={changeEmail}/>
+                            <Form.Control required type="email" placeholder="Email" onChange={changeEmail}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid email.
+                            </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="password">
+                        <Form.Group className="mb-3 required" controlId="password">
                             <Form.Label>Password</Form.Label>
-                            <Form.Control type="password" placeholder="Password" onChange={changePassword}/>
+                            <Form.Control required type="password" placeholder="Password" onChange={changePassword}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid password.
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <Button variant="primary" type="submit">
