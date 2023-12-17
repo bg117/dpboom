@@ -2,12 +2,12 @@ import {useMutation, useQuery} from "@tanstack/react-query";
 import {client} from "@/utils/supabase";
 import {Tables} from "@/database";
 
-export function useGetEntries() {
+export function useGetEvents() {
     return useQuery({
-        queryKey: ["entries"],
+        queryKey: ["events"],
         queryFn: async () => {
             const {data, error} = await client
-                .from("entries_with_display_name")
+                .from("events_with_display_name")
                 .select("*")
                 .filter("public", "eq", true)
                 .order("created_at", {ascending: false});
@@ -21,12 +21,12 @@ export function useGetEntries() {
     });
 }
 
-export function useGetEntry(slug: string) {
+export function useGetEvent(slug: string) {
     return useQuery({
-        queryKey: ["entries", slug],
+        queryKey: ["events", slug],
         queryFn: async () => {
             const {data, error} = await client
-                .from("entries_with_display_name")
+                .from("events_with_display_name")
                 .select("*")
                 .filter("slug", "eq", slug)
                 .single();
@@ -40,12 +40,12 @@ export function useGetEntry(slug: string) {
     });
 }
 
-export function useGetUserEntries(userId: string) {
+export function useGetUserEvents(userId: string) {
     return useQuery({
-        queryKey: ["entries", userId],
+        queryKey: ["events", userId],
         queryFn: async () => {
             const {data, error} = await client
-                .from("entries_with_display_name")
+                .from("events_with_display_name")
                 .select("*")
                 .filter("user_id", "eq", userId)
                 .order("created_at", {ascending: false});
@@ -59,10 +59,10 @@ export function useGetUserEntries(userId: string) {
     });
 }
 
-export function useInsertEntry() {
+export function useInsertEvent() {
     return useMutation({
-        mutationFn: async (entry: Tables<"entries">) => {
-            const {data, error} = await client.from("entries").insert(entry);
+        mutationFn: async (entry: Tables<"events">) => {
+            const {data, error} = await client.from("events").insert(entry);
 
             if (error) {
                 throw error;
@@ -73,10 +73,10 @@ export function useInsertEntry() {
     });
 }
 
-export function useUpdateEntry() {
+export function useUpdateEvent() {
     return useMutation({
-        mutationFn: async (entry: Tables<"entries">) => {
-            const {data, error} = await client.from("entries").update(entry);
+        mutationFn: async (entry: Tables<"events">) => {
+            const {data, error} = await client.from("events").update(entry);
 
             if (error) {
                 throw error;
@@ -87,10 +87,10 @@ export function useUpdateEntry() {
     });
 }
 
-export function useDeleteEntry() {
+export function useDeleteEvent() {
     return useMutation({
-        mutationFn: async (entry: Tables<"entries">) => {
-            const {data, error} = await client.from("entries").delete().match({slug: entry.slug});
+        mutationFn: async (entry: Tables<"events">) => {
+            const {data, error} = await client.from("events").delete().match({slug: entry.slug});
 
             if (error) {
                 throw error;

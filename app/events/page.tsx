@@ -3,12 +3,12 @@
 import {Content} from "@/components/content";
 import {useSession} from "@/hooks/session";
 import {Button, Card, Col, Row} from "react-bootstrap";
-import {useGetEntries} from "@/hooks/entries";
+import {useGetEvents} from "@/hooks/events";
 import Link from "next/link";
 
 export default function Events() {
     const {session} = useSession();
-    const {data, isLoading, isError, error} = useGetEntries();
+    const {data, isLoading, isError, error} = useGetEvents();
 
     return <Content>
         <h1>Events</h1>

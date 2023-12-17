@@ -3,7 +3,7 @@
 import {Content} from "@/components/content";
 import {Alert, Button, Form, Image} from "react-bootstrap";
 import {ChangeEvent, useCallback, useEffect, useState} from "react";
-import {useInsertEntry} from "@/hooks/entries";
+import {useInsertEvent} from "@/hooks/events";
 import {useSession} from "@/hooks/session";
 import {useRouter} from "next/navigation";
 
@@ -18,7 +18,7 @@ export default function Events() {
 
     const router = useRouter();
 
-    const {mutate, isError, isSuccess, error: mutateError} = useInsertEntry();
+    const {mutate, isError, isSuccess, error: mutateError} = useInsertEvent();
     const {session} = useSession();
 
     const changeEventName = useCallback((event: ChangeEvent<HTMLInputElement>) => setEventName(event.target.value), []);
