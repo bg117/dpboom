@@ -9,7 +9,6 @@ import {useRouter} from "next/navigation";
 
 export default function Events() {
     const [eventName, setEventName] = useState('');
-    const [eventEndsAt, setEventEndsAt] = useState<string | null>(null);
     const [eventSlug, setEventSlug] = useState('');
     const [eventCaption, setEventCaption] = useState('');
     const [eventFrame, setEventFrame] = useState<string>('');
@@ -35,7 +34,6 @@ export default function Events() {
     }, []);
 
     const changeEventIsPublic = useCallback((event: ChangeEvent<HTMLInputElement>) => setEventIsPublic(event.target.checked), []);
-    const changeEventEndsAt = useCallback((event: ChangeEvent<HTMLInputElement>) => setEventEndsAt(event.target.value), []);
     const changeEventSlug = useCallback((event: ChangeEvent<HTMLInputElement>) => setEventSlug(event.target.value), []);
 
     const handleSubmit = useCallback((e: ChangeEvent<HTMLFormElement>) => {
@@ -66,14 +64,13 @@ export default function Events() {
             caption: eventCaption,
             frame: eventFrame,
             public: eventIsPublic,
-            ends_at: eventEndsAt,
             slug: slug,
             created_at: new Date().toISOString(),
             user_id: session!.user!.id,
         };
 
         mutate(data);
-    }, [eventSlug, eventName, eventCaption, eventFrame, eventIsPublic, eventEndsAt, session, mutate]);
+    }, [eventSlug, eventName, eventCaption, eventFrame, eventIsPublic, session, mutate]);
 
     useEffect(() => {
         if (isError) {
@@ -95,11 +92,6 @@ export default function Events() {
                 <Form.Control.Feedback type="invalid">
                     Please provide a valid event name.
                 </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group controlId="formEventEnd" className="mb-3 d-flex flex-column">
-                <Form.Label>Ends at</Form.Label>
-                <Form.Control type="datetime-local" placeholder="Enter event end date" onChange={changeEventEndsAt}/>
             </Form.Group>
 
             <Form.Group controlId="formEventCaption" className="mb-3 required">
