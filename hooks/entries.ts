@@ -7,7 +7,7 @@ export function useGetEntries() {
         queryKey: ["entries"],
         queryFn: async () => {
             const {data, error} = await client
-                .from("entries")
+                .from("entries_with_display_name")
                 .select("*")
                 .filter("public", "eq", true)
                 .order("created_at", {ascending: false});
@@ -26,7 +26,7 @@ export function useGetEntry(slug: string) {
         queryKey: ["entries", slug],
         queryFn: async () => {
             const {data, error} = await client
-                .from("entries")
+                .from("entries_with_display_name")
                 .select("*")
                 .filter("slug", "eq", slug)
                 .single();
@@ -45,7 +45,7 @@ export function useGetUserEntries(userId: string) {
         queryKey: ["entries", userId],
         queryFn: async () => {
             const {data, error} = await client
-                .from("entries")
+                .from("entries_with_display_name")
                 .select("*")
                 .filter("user_id", "eq", userId)
                 .order("created_at", {ascending: false});
