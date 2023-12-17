@@ -90,7 +90,7 @@ export function useUpdateEntry() {
 export function useDeleteEntry() {
     return useMutation({
         mutationFn: async (entry: Tables<"entries">) => {
-            const {data, error} = await client.from("entries").delete().match({id: entry.id});
+            const {data, error} = await client.from("entries").delete().match({slug: entry.slug});
 
             if (error) {
                 throw error;
