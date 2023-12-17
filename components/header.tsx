@@ -39,9 +39,9 @@ export function Header() {
         getName().then();
     }, [getName]);
 
-    return <Navbar expand="lg" collapseOnSelect className="bg-success-subtle">
-        <Container>
-            <Navbar.Brand as={Link} href="/">dpBoom!</Navbar.Brand>
+    return <Navbar expand="lg" collapseOnSelect className="border-bottom">
+        <Container fluid>
+            <Navbar.Brand as={Link} href="/" className="title-font">dpBoom!</Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarSupportedContent"/>
             <Navbar.Collapse id="navbarSupportedContent">
                 <Nav className="me-auto mb-2 mb-lg-0">
