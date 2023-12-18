@@ -59,7 +59,7 @@ export function Header() {
                 </Nav>
                 <Nav className="ms-auto mb-2 mb-lg-0">
                     {session ? <>
-                        <NavDropdown title={name} id="basic-nav-dropdown">
+                        <NavDropdown align="end" title={name} id="basic-nav-dropdown">
                             <NavDropdown.Item as={Link} href="/profile">Profile</NavDropdown.Item>
                             <NavDropdown.Divider/>
                             <NavDropdown.Item as={Link} href="#" onClick={handleLogout}>Logout</NavDropdown.Item>
