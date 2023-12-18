@@ -110,8 +110,15 @@ export default function SlugComponent({slug}: { slug: string}) {
         </Content>;
     }
 
+    if (!data) {
+        return <Content>
+            <h1>Not Found</h1>
+            <p>The event you are looking for does not exist.</p>
+        </Content>;
+    }
+
     return <Content>
-        <h1>{data!.name}</h1>
+        <h1>{data.name}</h1>
 
         {/* readonly textarea filled with caption with copy button */}
         <Row className="g-4">

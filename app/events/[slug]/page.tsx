@@ -20,21 +20,24 @@ export async function generateMetadata({params: {slug}}: Props) {
         .single();
 
     if (error) {
-        throw error;
+        return {
+            title: "Error | dpBoom!",
+            description: error.message,
+        };
+    }
+
+    if (!data) {
+        return {
+            title: "Not Found | dpBoom!",
+            description: "Event not found",
+        };
     }
 
     return {
-        title: `${data!.name} | dpBoom!`,
-        description: data!.caption,
+        title: `${data.name} | dpBoom!`,
+        description: data.caption,
         openGraph: {
-            images: [
-                {
-                    url: data!.frame,
-                    width: 1200,
-                    height: 630,
-                    alt: data!.name,
-                },
-            ]
+            images: [data.frame]
         }
     };
 }
