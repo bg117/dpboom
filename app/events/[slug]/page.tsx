@@ -4,6 +4,7 @@ import {Content} from "@/components/content";
 import {useGetEvent} from "@/hooks/events";
 import {Button, Col, FormControl, Image as Im, Row} from "react-bootstrap";
 import {useCallback, useEffect, useMemo, useState} from "react";
+import fileDownload from "js-file-download";
 
 export default function Slug({params: {slug}}: { params: { slug: string } }) {
     const {data, isLoading, isError, error} = useGetEvent(slug);
@@ -37,6 +38,9 @@ export default function Slug({params: {slug}}: { params: { slug: string } }) {
         };
         input.click();
     }, []);
+    const downloadClick = useCallback(() => {
+        fileDownload(imgSrc, `${data!.name}.png`);
+    }, [data, imgSrc]);
 
     useEffect(() => {
         canvas.width = frame.width;
@@ -92,8 +96,9 @@ export default function Slug({params: {slug}}: { params: { slug: string } }) {
                 <Im fluid src={imgSrc} className="mb-2" alt="frame"/>
                 <div className="d-flex gap-2 flex-column flex-sm-row">
                     <Button variant="secondary" className="w-100" onClick={uploadClick}>Upload</Button>
-                    <Button variant="outline-secondary" className="w-100" href={imgSrc!}
-                            download disabled={!img}>Download</Button>
+                    <Button variant="outline-secondary" className="w-100" disabled={!img} onClick={downloadClick}>
+                        Download
+                    </Button>
                 </div>
             </Col>
         </Row>
