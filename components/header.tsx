@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {useSession} from "@/hooks/session";
 import {ReactNode, useCallback, useState, useEffect} from "react";
-import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
+import {Container, Image, Nav, Navbar, NavDropdown} from "react-bootstrap";
 
 function HeaderLink({href, children, LinkProps}: { href: string, children: ReactNode, LinkProps?: any }) {
     return <Nav.Item>
@@ -41,7 +41,17 @@ export function Header() {
 
     return <Navbar expand="lg" collapseOnSelect className="border-bottom">
         <Container fluid>
-            <Navbar.Brand as={Link} href="/" className="title-font">dpBoom!</Navbar.Brand>
+            <Navbar.Brand as={Link} href="/">
+                <Image
+                    src="/logo.svg"
+                    className="d-inline-block align-top"
+                    style={{
+                        height: '2.5rem',
+                        width: 'auto'
+                    }}
+                    alt="dpBoom logo"
+                />
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarSupportedContent"/>
             <Navbar.Collapse id="navbarSupportedContent">
                 <Nav className="me-auto mb-2 mb-lg-0">
