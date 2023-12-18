@@ -4,6 +4,7 @@ import {Content} from "@/components/content";
 import {useGetEvent} from "@/hooks/events";
 import {Button, Col, FormControl, Image as Im, Row} from "react-bootstrap";
 import {useCallback, useEffect, useRef, useState} from "react";
+import Head from "next/head";
 
 export default function Slug({params: {slug}}: { params: { slug: string } }) {
     const {data, isLoading, isError, error} = useGetEvent(slug);
@@ -110,39 +111,57 @@ export default function Slug({params: {slug}}: { params: { slug: string } }) {
         </Content>;
     }
 
-    return <Content>
-        <h1>{data!.name}</h1>
+    if (!data) {
+        return <Content>
+            <h1>Not Found</h1>
+            <p>Event not found.</p>
+        </Content>;
+    }
 
-        {/* readonly textarea filled with caption with copy button */}
-        <Row className="g-4">
-            <Col md={4}>
-                <h6 className="text-muted">Frame</h6>
+    return <>
+        <Head>
+            <title>{data.name} | dpBoom!</title>
+            <meta name="description" content={data.caption!}/>
+            <meta property="og:title" content={data.name!}/>
+            <meta property="og:description" content={data.caption!}/>
+            <meta property="og:image" content={imgSrc}/>
+        </Head>
+        <Content>
+            <h1>{data.name}</h1>
 
-                <Im fluid src={imgSrc} alt="frame" className="mb-2"/>
+            {/* readonly textarea filled with caption with copy button */}
+            <Row className="g-4">
+                <Col md={4}>
+                    <h6 className="text-muted">Frame</h6>
 
-                <div className="d-flex gap-2 flex-column flex-sm-row">
-                    <Button variant="secondary" className="w-100" onClick={uploadClick}>Upload</Button>
-                    <Button variant="outline-secondary" className="w-100" disabled={!img} onClick={downloadClick}>
-                        Download
-                    </Button>
-                </div>
-            </Col>
-            <Col md={8} className="d-flex flex-column">
-                <h6 className="text-muted">Caption</h6>
-                <FormControl as="textarea" readOnly value={data!.caption!} className="mb-2" rows={10}/>
-                <Button variant="outline-secondary" onClick={copyClick}>Copy</Button>
-            </Col>
-        </Row>
-        <hr/>
-        <h5>Share this Event</h5>
-        <p>Share this event with your friends and family!</p>
-        <div className="d-flex gap-2">
-            <Button variant="outline-primary" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}>
-                Facebook
-            </Button>
-            <Button variant="outline-primary" href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data!.caption!)}&url=${encodeURIComponent(window.location.href)}`}>
-                Twitter
-            </Button>
-        </div>
-    </Content>;
+                    <Im fluid src={imgSrc} alt="frame" className="mb-2"/>
+
+                    <div className="d-flex gap-2 flex-column flex-sm-row">
+                        <Button variant="secondary" className="w-100" onClick={uploadClick}>Upload</Button>
+                        <Button variant="outline-secondary" className="w-100" disabled={!img} onClick={downloadClick}>
+                            Download
+                        </Button>
+                    </div>
+                </Col>
+                <Col md={8} className="d-flex flex-column">
+                    <h6 className="text-muted">Caption</h6>
+                    <FormControl as="textarea" readOnly value={data!.caption!} className="mb-2" rows={10}/>
+                    <Button variant="outline-secondary" onClick={copyClick}>Copy</Button>
+                </Col>
+            </Row>
+            <hr/>
+            <h5>Share this Event</h5>
+            <p>Share this event with your friends and family!</p>
+            <div className="d-flex gap-2">
+                <Button variant="outline-primary"
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}>
+                    Facebook
+                </Button>
+                <Button variant="outline-primary"
+                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data!.caption!)}&url=${encodeURIComponent(window.location.href)}`}>
+                    Twitter
+                </Button>
+            </div>
+        </Content>
+    </>;
 }
