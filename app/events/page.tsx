@@ -4,22 +4,38 @@ import {Content} from "@/components/content";
 import {useSession} from "@/hooks/session";
 import {Button, Card, Col, Row} from "react-bootstrap";
 import {useGetEvents} from "@/hooks/events";
+import {useRouter} from "next/navigation";
+import {useCallback} from "react";
 import Link from "next/link";
 
 export default function Events() {
     const {session} = useSession();
     const {data, isLoading, isError, error} = useGetEvents();
+    const router = useRouter();
+
+    const navigateToCreate = useCallback(() => router.push("/events/create"), [router]);
+
+    if (isLoading) {
+        return <Content>
+            <h1>Loading...</h1>
+        </Content>;
+    }
+
+    if (isError) {
+        return <Content>
+            <h1>Error</h1>
+            <p>{error?.message}</p>
+        </Content>;
+    }
 
     return <Content>
         <h1>Events</h1>
         {session &&
             <div className="d-inline-block mb-4">
-                <Button href="/events/create" variant="outline-primary">Create Event</Button>
+                <Button onClick={navigateToCreate} variant="outline-primary">Create Event</Button>
             </div>}
-        {isLoading && <h5>Loading...</h5>}
-        {isError && <h5>{error?.message}</h5>}
         <Row>
-            {data?.map((event) =>
+            {data!.map((event) =>
                 <Col lg={4} md={6} key={event.slug} className="mb-4 d-flex flex-column">
                     <Card className="flex-grow-1">
                         <Card.Body>

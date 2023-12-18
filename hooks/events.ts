@@ -29,6 +29,7 @@ export function useGetEvent(slug: string) {
                 .from("events_with_display_name")
                 .select("*")
                 .filter("slug", "eq", slug)
+                .limit(1)
                 .single();
 
             if (error) {
