@@ -54,7 +54,7 @@ export default function Slug({params: {slug}}: { params: { slug: string } }) {
     aRef.current.download = 'frame.png';
     aRef.current.href = imgSrc;
 
-    useEffect(() => {
+    const setUp = useCallback(() => {
         if (!data?.frame) {
             return;
         }
@@ -71,7 +71,7 @@ export default function Slug({params: {slug}}: { params: { slug: string } }) {
         setFrame(f);
     }, [data]);
 
-    useEffect(() => {
+    const setUpImg = useCallback(() => {
         if (!frame || !img) {
             return;
         }
@@ -91,6 +91,11 @@ export default function Slug({params: {slug}}: { params: { slug: string } }) {
 
         setImgSrc(canvasRef.current.toDataURL());
     }, [img, frame]);
+
+    useEffect(() => {
+        setUp();
+        setUpImg();
+    }, [setUp, setUpImg]);
 
     if (isLoading) {
         return <Content>
