@@ -1,7 +1,7 @@
 'use client';
 
 import { useGetEvent } from '@/hooks/events';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Content } from '@/components/content';
 import { Button, Col, FormControl, Image as Im, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -37,6 +37,10 @@ type ImageDisplayComponentProps = {
 };
 
 export default function SlugComponent({ slug }: { slug: string }) {
+    const dOffset = 50;
+    const dRotate = 15;
+    const dScale = 0.1;
+
     const { data, isLoading, isError, error } = useGetEvent(slug);
     const { hasCopied, copy } = useCopyToClipboard();
     const [imgSrc, setImgSrc] = useState<string>(data?.frame ?? '');
@@ -46,26 +50,20 @@ export default function SlugComponent({ slug }: { slug: string }) {
     const [offsetTop, setOffsetTop] = useState(0);
     const [rotate, setRotate] = useState(0);
     const [scaleFactor, setScaleFactor] = useState(0);
-
-    const repaint = useRef(true);
-    const setUpDone = useRef(false);
-    const canvasRef = useRef(document.createElement('canvas'));
-    const inputRef = useRef(document.createElement('input'));
-    const aRef = useRef(document.createElement('a'));
-    const ctx = useRef(canvasRef.current.getContext('2d')!);
+    const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+    const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
 
     const copyClick = useCallback(() => {
         copy(data!.caption!);
     }, [copy, data]);
 
-    const inputOnChange = useCallback((e: any) => {
+    const inputOnChange = useCallback((e: Event) => {
         const file = (e.target as HTMLInputElement).files![0];
         const reader = new FileReader();
         reader.onload = e => {
             const img = new Image();
             img.src = e.target!.result as string;
             img.onload = () => {
-                repaint.current = true;
                 setOffsetLeft(0);
                 setOffsetTop(0);
                 setRotate(0);
@@ -76,61 +74,54 @@ export default function SlugComponent({ slug }: { slug: string }) {
     }, []);
 
     const uploadClick = useCallback(() => {
-        // show file dialog
-        inputRef.current?.click();
-    }, []);
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.hidden = true;
+        input.onchange = inputOnChange;
+        input.click();
+    }, [inputOnChange]);
 
     const downloadClick = useCallback(() => {
-        aRef.current?.click();
+        const a = document.createElement('a');
+        a.hidden = true;
+        a.download = '';
+        a.href = imgSrc;
+        a.click();
+    }, [imgSrc]);
+
+    useEffect(() => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        setCanvas(canvas);
+        setCtx(ctx);
     }, []);
 
-    inputRef.current.type = 'file';
-    inputRef.current.accept = 'image/*';
-    inputRef.current.hidden = true;
-    inputRef.current.onchange = inputOnChange;
-
-    aRef.current.hidden = true;
-    aRef.current.download = 'frame.png';
-    aRef.current.href = imgSrc;
-
-    const setUp = useCallback(() => {
-        if (!data?.frame) {
-            return;
-        }
-
-        if (setUpDone.current) {
+    useEffect(() => {
+        if (!data?.frame || !canvas || !ctx) {
             return;
         }
 
         const f = new Image();
         f.src = data.frame;
         f.onload = () => {
-            canvasRef.current.width = f.width;
-            canvasRef.current.height = f.height;
+            canvas.width = f.width;
+            canvas.height = f.height;
 
-            ctx.current.drawImage(f, 0, 0);
+            ctx.drawImage(f, 0, 0);
 
-            setImgSrc(canvasRef.current.toDataURL());
+            setImgSrc(canvas.toDataURL());
             setFrame(f);
-
-            setUpDone.current = true;
         };
-    }, [data]);
+    }, [data, canvas, ctx]);
 
-    const setUpImg = useCallback(() => {
-        if (!frame || !img || !repaint.current) {
+    useEffect(() => {
+        if (!frame || !img || !canvas || !ctx) {
             return;
         }
 
-        repaint.current = false;
-
         // clear canvas
-        ctx.current.clearRect(
-            0,
-            0,
-            canvasRef.current.width,
-            canvasRef.current.height
-        );
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // draw img in the center of the canvas
         const x = (frame.width - img.width) / 2 + offsetLeft;
@@ -142,30 +133,35 @@ export default function SlugComponent({ slug }: { slug: string }) {
             Math.max(frame.width / img.width, frame.height / img.height) +
             scaleFactor;
         // draw img on canvas
-        ctx.current.save();
-        ctx.current.translate(centerX, centerY); // translate to center of canvas
-        ctx.current.rotate((rotate * Math.PI) / 180); // rotate by radians
-        ctx.current.scale(scale, scale); // scale
-        ctx.current.translate(-centerX, -centerY); // translate back
-        ctx.current.drawImage(img, x, y); // draw img
-        ctx.current.restore();
+        ctx.save();
+        ctx.translate(centerX, centerY); // translate to center of canvas
+        ctx.rotate((rotate * Math.PI) / 180); // rotate by radians
+        ctx.scale(scale, scale); // scale
+        ctx.translate(-centerX, -centerY); // translate back
+        ctx.drawImage(img, x, y); // draw img
+        ctx.restore();
 
         // draw frame on top of img
-        ctx.current.drawImage(frame, 0, 0);
+        ctx.drawImage(frame, 0, 0);
 
-        const dataURL = canvasRef.current.toDataURL();
+        const dataURL = canvas.toDataURL();
         if (dataURL !== imgSrc) {
             setImgSrc(dataURL);
         }
-    }, [frame, img, imgSrc, offsetLeft, offsetTop, rotate, scaleFactor]);
-
-    const dOffset = 50;
-    const dRotate = 15;
-    const dScale = 0.1;
+    }, [
+        frame,
+        img,
+        imgSrc,
+        offsetLeft,
+        offsetTop,
+        rotate,
+        scaleFactor,
+        canvas,
+        ctx
+    ]);
 
     const moveOffset = useCallback(
         (x: number, y: number) => {
-            repaint.current = true;
             setOffsetLeft(offsetLeft + x);
             setOffsetTop(offsetTop + y);
         },
@@ -174,7 +170,6 @@ export default function SlugComponent({ slug }: { slug: string }) {
 
     const rotateOffset = useCallback(
         (r: number) => {
-            repaint.current = true;
             setRotate(rotate + r);
         },
         [rotate]
@@ -182,7 +177,6 @@ export default function SlugComponent({ slug }: { slug: string }) {
 
     const zoomOffset = useCallback(
         (s: number) => {
-            repaint.current = true;
             setScaleFactor(scaleFactor + s);
         },
         [scaleFactor]
@@ -192,39 +186,28 @@ export default function SlugComponent({ slug }: { slug: string }) {
         () => moveOffset(-dOffset, 0),
         [moveOffset]
     );
-
     const moveUpClick = useCallback(
         () => moveOffset(0, -dOffset),
         [moveOffset]
     );
-
     const moveDownClick = useCallback(
         () => moveOffset(0, dOffset),
         [moveOffset]
     );
-
     const moveRightClick = useCallback(
         () => moveOffset(dOffset, 0),
         [moveOffset]
     );
-
     const rotateLeftClick = useCallback(
         () => rotateOffset(-dRotate),
         [rotateOffset]
     );
-    
     const rotateRightClick = useCallback(
         () => rotateOffset(dRotate),
         [rotateOffset]
     );
-
     const zoomInClick = useCallback(() => zoomOffset(dScale), [zoomOffset]);
     const zoomOutClick = useCallback(() => zoomOffset(-dScale), [zoomOffset]);
-
-    useEffect(() => {
-        setUp();
-        setUpImg();
-    }, [setUp, setUpImg]);
 
     if (isLoading) {
         return (
@@ -291,9 +274,11 @@ export default function SlugComponent({ slug }: { slug: string }) {
                 </Col>
             </Row>
             <hr />
-            <h5>Share this Event</h5>
-            <p>Share this event with your friends and family!</p>
-            <SocialMediaComponent />
+            <div>
+                <h5>Share this Event</h5>
+                <p>Share this event with your friends and family!</p>
+                <SocialMediaComponent />
+            </div>
         </Content>
     );
 }
