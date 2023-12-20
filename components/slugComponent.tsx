@@ -16,6 +16,7 @@ import {
     faRotateRight
 } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { useCopyToClipboard } from '@/hooks/copy';
 
 type ImageControlComponentProps = {
     onMoveLeftClick: () => void;
@@ -37,6 +38,7 @@ type ImageDisplayComponentProps = {
 
 export default function SlugComponent({ slug }: { slug: string }) {
     const { data, isLoading, isError, error } = useGetEvent(slug);
+    const { hasCopied, copy } = useCopyToClipboard();
     const [imgSrc, setImgSrc] = useState<string>(data?.frame ?? '');
     const [img, setImg] = useState<HTMLImageElement | null>(null);
     const [frame, setFrame] = useState<HTMLImageElement | null>(null);
@@ -44,7 +46,6 @@ export default function SlugComponent({ slug }: { slug: string }) {
     const [offsetTop, setOffsetTop] = useState(0);
     const [rotate, setRotate] = useState(0);
     const [scaleFactor, setScaleFactor] = useState(0);
-    const [copied, setCopied] = useState(false);
 
     const repaint = useRef(true);
     const setUpDone = useRef(false);
@@ -53,14 +54,9 @@ export default function SlugComponent({ slug }: { slug: string }) {
     const aRef = useRef(document.createElement('a'));
     const ctx = useRef(canvasRef.current.getContext('2d')!);
 
-    const copyClick = useCallback(async () => {
-        if (!data?.caption) {
-            return;
-        }
-
-        await navigator.clipboard.writeText(data.caption);
-        setCopied(true);
-    }, [data]);
+    const copyClick = useCallback(() => {
+        copy(data!.caption!);
+    }, [copy, data]);
 
     const inputOnChange = useCallback((e: any) => {
         const file = (e.target as HTMLInputElement).files![0];
@@ -196,14 +192,17 @@ export default function SlugComponent({ slug }: { slug: string }) {
         () => moveOffset(-dOffset, 0),
         [moveOffset]
     );
+
     const moveUpClick = useCallback(
         () => moveOffset(0, -dOffset),
         [moveOffset]
     );
+
     const moveDownClick = useCallback(
         () => moveOffset(0, dOffset),
         [moveOffset]
     );
+
     const moveRightClick = useCallback(
         () => moveOffset(dOffset, 0),
         [moveOffset]
@@ -213,6 +212,7 @@ export default function SlugComponent({ slug }: { slug: string }) {
         () => rotateOffset(-dRotate),
         [rotateOffset]
     );
+    
     const rotateRightClick = useCallback(
         () => rotateOffset(dRotate),
         [rotateOffset]
@@ -281,12 +281,12 @@ export default function SlugComponent({ slug }: { slug: string }) {
                     <FormControl
                         as="textarea"
                         readOnly
-                        value={data!.caption!}
+                        value={data.caption!}
                         className="mb-2"
                         rows={10}
                     />
                     <Button variant="outline-secondary" onClick={copyClick}>
-                        {copied ? 'Copied!' : 'Copy'}
+                        {hasCopied ? 'Copied!' : 'Copy'}
                     </Button>
                 </Col>
             </Row>
