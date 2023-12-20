@@ -1,6 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { client } from '@/utils/supabase';
-import { Tables } from '@/database';
+import { Database, Tables } from '@/database';
+
+type EventTable = Database['public']['Tables']['events'];
+type EventWithDisplayName = EventTable['Row'] & { display_name: string };
+type EventInsert = EventTable['Insert'];
+type EventUpdate = EventTable['Update'];
 
 export function useGetEvents() {
     return useQuery({
@@ -16,7 +21,8 @@ export function useGetEvents() {
                 throw error;
             }
 
-            return data;
+            // make members of data non-nullable
+            return data as EventWithDisplayName[] | null;
         }
     });
 }
@@ -36,7 +42,7 @@ export function useGetEvent(slug: string) {
                 throw error;
             }
 
-            return data;
+            return data as EventWithDisplayName | null;
         }
     });
 }
@@ -55,14 +61,14 @@ export function useGetUserEvents(userId: string) {
                 throw error;
             }
 
-            return data;
+            return data as EventWithDisplayName[] | null;
         }
     });
 }
 
 export function useInsertEvent() {
     return useMutation({
-        mutationFn: async (entry: Tables<'events'>) => {
+        mutationFn: async (entry: EventInsert) => {
             const { data, error } = await client.from('events').insert(entry);
 
             if (error) {
@@ -76,7 +82,7 @@ export function useInsertEvent() {
 
 export function useUpdateEvent() {
     return useMutation({
-        mutationFn: async (entry: Tables<'events'>) => {
+        mutationFn: async (entry: EventUpdate) => {
             const { data, error } = await client.from('events').update(entry);
 
             if (error) {
@@ -90,7 +96,7 @@ export function useUpdateEvent() {
 
 export function useDeleteEvent() {
     return useMutation({
-        mutationFn: async (entry: Tables<'events'>) => {
+        mutationFn: async (entry: EventWithDisplayName) => {
             const { data, error } = await client
                 .from('events')
                 .delete()
