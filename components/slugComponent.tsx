@@ -28,6 +28,13 @@ type ImageControlComponentProps = {
     onZoomOutClick: () => void;
 };
 
+type ImageDisplayComponentProps = {
+    src: string;
+    ImageControlComponentProps: ImageControlComponentProps;
+    onUploadClick: () => void;
+    onDownloadClick: () => void;
+};
+
 export default function SlugComponent({ slug }: { slug: string }) {
     const { data, isLoading, isError, error } = useGetEvent(slug);
     const [imgSrc, setImgSrc] = useState<string>(data?.frame ?? '');
@@ -72,9 +79,8 @@ export default function SlugComponent({ slug }: { slug: string }) {
         reader.readAsDataURL(file);
     }, []);
 
-    const uploadClick = useCallback((e: any) => {
+    const uploadClick = useCallback(() => {
         // show file dialog
-        e.preventDefault();
         inputRef.current?.click();
     }, []);
 
@@ -254,40 +260,21 @@ export default function SlugComponent({ slug }: { slug: string }) {
             <Row className="g-4">
                 <Col md={4}>
                     <h6 className="text-muted">Frame</h6>
-
-                    <Im fluid src={imgSrc} alt="frame" className="mb-2" />
-
-                    <div className="d-flex gap-2 flex-column">
-                        {img && (
-                            <ImageControlComponent
-                                onMoveLeftClick={moveLeftClick}
-                                onMoveUpClick={moveUpClick}
-                                onMoveDownClick={moveDownClick}
-                                onMoveRightClick={moveRightClick}
-                                onRotateLeftClick={rotateLeftClick}
-                                onRotateRightClick={rotateRightClick}
-                                onZoomInClick={zoomInClick}
-                                onZoomOutClick={zoomOutClick}
-                            />
-                        )}
-                        <div className="d-flex gap-2 flex-column flex-sm-row">
-                            <Button
-                                variant="secondary"
-                                className="w-100"
-                                onClick={uploadClick}
-                            >
-                                Upload
-                            </Button>
-                            <Button
-                                variant="outline-secondary"
-                                className="w-100"
-                                disabled={!img}
-                                onClick={downloadClick}
-                            >
-                                Download
-                            </Button>
-                        </div>
-                    </div>
+                    <ImageDisplayComponent
+                        src={imgSrc}
+                        ImageControlComponentProps={{
+                            onMoveLeftClick: moveLeftClick,
+                            onMoveUpClick: moveUpClick,
+                            onMoveDownClick: moveDownClick,
+                            onMoveRightClick: moveRightClick,
+                            onRotateLeftClick: rotateLeftClick,
+                            onRotateRightClick: rotateRightClick,
+                            onZoomInClick: zoomInClick,
+                            onZoomOutClick: zoomOutClick
+                        }}
+                        onUploadClick={uploadClick}
+                        onDownloadClick={downloadClick}
+                    />
                 </Col>
                 <Col md={8} className="d-flex flex-column">
                     <h6 className="text-muted">Caption</h6>
@@ -306,24 +293,7 @@ export default function SlugComponent({ slug }: { slug: string }) {
             <hr />
             <h5>Share this Event</h5>
             <p>Share this event with your friends and family!</p>
-            <div className="d-flex gap-2">
-                <Button
-                    variant="outline-primary"
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                        window.location.href
-                    )}`}
-                >
-                    <FontAwesomeIcon icon={faFacebook} />
-                </Button>
-                <Button
-                    variant="outline-primary"
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                        data!.caption!
-                    )}&url=${encodeURIComponent(window.location.href)}`}
-                >
-                    <FontAwesomeIcon icon={faTwitter} />
-                </Button>
-            </div>
+            <SocialMediaComponent />
         </Content>
     );
 }
@@ -418,6 +388,63 @@ function ImageControlComponent(props: ImageControlComponentProps) {
                     </Button>
                 </Col>
             </Row>
+        </>
+    );
+}
+
+function SocialMediaComponent() {
+    return (
+        <div className="d-flex gap-2">
+            <Button
+                variant="outline-primary"
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                    window.location.href
+                )}`}
+            >
+                <FontAwesomeIcon icon={faFacebook} />
+            </Button>
+            <Button
+                variant="outline-primary"
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                    window.location.href
+                )}`}
+            >
+                <FontAwesomeIcon icon={faTwitter} />
+            </Button>
+        </div>
+    );
+}
+
+function ImageDisplayComponent(props: ImageDisplayComponentProps) {
+    const {
+        src,
+        ImageControlComponentProps,
+        onUploadClick: uploadClick,
+        onDownloadClick: downloadClick
+    } = props;
+
+    return (
+        <>
+            <Im fluid src={src} alt="frame" className="mb-2" />
+            <div className="d-flex gap-2 flex-column">
+                <ImageControlComponent {...ImageControlComponentProps} />
+                <div className="d-flex gap-2 flex-column flex-sm-row">
+                    <Button
+                        variant="secondary"
+                        className="w-100"
+                        onClick={uploadClick}
+                    >
+                        Upload
+                    </Button>
+                    <Button
+                        variant="outline-secondary"
+                        className="w-100"
+                        onClick={downloadClick}
+                    >
+                        Download
+                    </Button>
+                </div>
+            </div>
         </>
     );
 }
