@@ -61,7 +61,7 @@ export default function SlugComponent({ slug }: { slug: string }) {
     const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
 
     const copyClick = useCallback(() => {
-        copy(data!.caption!);
+        copy(data?.caption ?? '');
     }, [copy, data]);
 
     const inputOnChange = useCallback((e: Event) => {
@@ -105,7 +105,7 @@ export default function SlugComponent({ slug }: { slug: string }) {
     }, []);
 
     useEffect(() => {
-        if (!data?.frame || !canvas || !ctx) {
+        if (!data || !canvas || !ctx) {
             return;
         }
 
@@ -271,7 +271,7 @@ export default function SlugComponent({ slug }: { slug: string }) {
                 <Col md={8} className="d-flex flex-column">
                     <h6 className="text-muted">Caption</h6>
                     <CaptionDisplayComponent
-                        caption={data.caption!}
+                        caption={data.caption}
                         hasCopied={hasCopied}
                         onCopyClick={copyClick}
                     />

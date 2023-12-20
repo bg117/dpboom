@@ -58,7 +58,7 @@ export default function EventsComponent() {
                 </div>
             )}
             <Row>
-                {data!.map(event => (
+                {data.map(event => (
                     <Col
                         lg={4}
                         md={6}
