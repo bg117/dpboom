@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { Content } from '@/components/content';
 import { Button, Card, Col, Row } from 'react-bootstrap';
-import Link from 'next/link';
+import Event from './event';
 
 export default function EventsComponent() {
     const { session } = useSession();
@@ -47,42 +47,25 @@ export default function EventsComponent() {
     return (
         <Content>
             <h1>Events</h1>
-            {session && (
-                <div className="d-inline-block mb-4">
-                    <Button
-                        onClick={navigateToCreate}
-                        variant="outline-primary"
-                    >
-                        Create Event
-                    </Button>
-                </div>
-            )}
-            <Row>
+            <div>
+                {session && (
+                    <div className="d-inline-block mb-4">
+                        <Button
+                            onClick={navigateToCreate}
+                            variant="outline-primary"
+                        >
+                            Create Event
+                        </Button>
+                    </div>
+                )}
                 {data.map(event => (
-                    <Col
-                        lg={4}
-                        md={6}
+                    <Event
                         key={event.slug}
-                        className="mb-4 d-flex flex-column"
-                    >
-                        <Card className="flex-grow-1">
-                            <Card.Body>
-                                <Card.Title>{event.name}</Card.Title>
-                                <Card.Subtitle className="mb-2 text-muted">
-                                    by {event.display_name}
-                                </Card.Subtitle>
-                                <Card.Text>{event.caption}</Card.Text>
-                                <Link
-                                    className="stretched-link"
-                                    href={`/events/${event.slug}`}
-                                >
-                                    View Event
-                                </Link>
-                            </Card.Body>
-                        </Card>
-                    </Col>
+                        creator={event.display_name}
+                        {...event}
+                    />
                 ))}
-            </Row>
+            </div>
         </Content>
     );
 }

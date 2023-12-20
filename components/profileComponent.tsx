@@ -6,6 +6,7 @@ import { Content } from './content';
 import { useGetUserEvents } from '@/hooks/events';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import Link from 'next/link';
+import Event from './event';
 
 export default function ProfileComponent() {
     const { isLoading, session } = useSession();
@@ -47,8 +48,11 @@ export default function ProfileComponent() {
     if (!data) {
         return (
             <Content>
-                <h1>No Events</h1>
-                <p>There are currently no events.</p>
+                <h1>No Profile Data</h1>
+                <p>
+                    There is no profile data for this user. Please create a
+                    profile.
+                </p>
             </Content>
         );
     }
@@ -61,7 +65,7 @@ export default function ProfileComponent() {
                 <h6 className="text-muted">Email: {session.user.email}</h6>
             </div>
 
-            <h2>Events</h2>
+            <h2>My Events</h2>
             <div>
                 <Button
                     className="mb-4 inline-block"
@@ -71,30 +75,7 @@ export default function ProfileComponent() {
                     Create Event
                 </Button>
                 {data.map(event => (
-                    <Card key={event.slug} className="mb-4">
-                        <Row className="g-0">
-                            <Col xs={12} md={4}>
-                                <Card.Img
-                                    variant="top"
-                                    src={event.frame}
-                                    alt={event.name}
-                                    className="img-fluid object-fit-fill"
-                                />
-                            </Col>
-                            <Col>
-                                <Card.Body>
-                                    <Card.Title>{event.name}</Card.Title>
-                                    <Card.Text>{event.caption}</Card.Text>
-                                    <Link
-                                        className="stretched-link"
-                                        href={`/events/${event.slug}`}
-                                    >
-                                        View Event
-                                    </Link>
-                                </Card.Body>
-                            </Col>
-                        </Row>
-                    </Card>
+                    <Event key={event.slug} creator={event.display_name} {...event} />
                 ))}
             </div>
         </Content>
