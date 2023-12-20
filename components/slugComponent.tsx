@@ -31,6 +31,7 @@ type ImageControlComponentProps = {
 
 type ImageDisplayComponentProps = {
     src: string;
+    controlComponentVisible: boolean;
     ImageControlComponentProps: ImageControlComponentProps;
     onUploadClick: () => void;
     onDownloadClick: () => void;
@@ -251,6 +252,7 @@ export default function SlugComponent({ slug }: { slug: string }) {
                     <h6 className="text-muted">Frame</h6>
                     <ImageDisplayComponent
                         src={imgSrc}
+                        controlComponentVisible={!!img}
                         ImageControlComponentProps={{
                             onMoveLeftClick: moveLeftClick,
                             onMoveUpClick: moveUpClick,
@@ -405,27 +407,30 @@ function ImageDisplayComponent(props: ImageDisplayComponentProps) {
     const {
         src,
         ImageControlComponentProps,
-        onUploadClick: uploadClick,
-        onDownloadClick: downloadClick
+        onUploadClick,
+        onDownloadClick,
+        controlComponentVisible
     } = props;
 
     return (
         <>
             <Im fluid src={src} alt="frame" className="mb-2" />
             <div className="d-flex gap-2 flex-column">
-                <ImageControlComponent {...ImageControlComponentProps} />
+                {controlComponentVisible && (
+                    <ImageControlComponent {...ImageControlComponentProps} />
+                )}
                 <div className="d-flex gap-2 flex-column flex-sm-row">
                     <Button
                         variant="secondary"
                         className="w-100"
-                        onClick={uploadClick}
+                        onClick={onUploadClick}
                     >
                         Upload
                     </Button>
                     <Button
                         variant="outline-secondary"
                         className="w-100"
-                        onClick={downloadClick}
+                        onClick={onDownloadClick}
                     >
                         Download
                     </Button>
