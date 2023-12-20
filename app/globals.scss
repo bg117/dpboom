@@ -3,16 +3,16 @@
 $font-family-sans-serif: 'Poppins', sans-serif;
 
 // color palette
-$primary: #DDD78D;
-$secondary: #DCBF85;
+$primary: #ddd78d;
+$secondary: #dcbf85;
 
-@import "bootstrap/scss/bootstrap";
+@import 'bootstrap/scss/bootstrap';
 
 div.required > .form-label:after {
-  content: " *";
-  color: red;
+    content: ' *';
+    color: red;
 }
 
 .title-font {
-  font-family: 'Rubik Doodle Shadow', cursive;
+    font-family: 'Rubik Doodle Shadow', cursive;
 }

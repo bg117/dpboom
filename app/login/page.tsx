@@ -1,4 +1,4 @@
-import LoginComponent from "@/components/loginComponent";
+import LoginComponent from '@/components/loginComponent';
 
 export default function Login() {
     return <LoginComponent />;
@@ -6,5 +6,5 @@ export default function Login() {
 
 export const metadata = {
     title: 'Login | dpBoom!',
-    description: 'Login to dpBoom!',
-}
+    description: 'Login to dpBoom!'
+};

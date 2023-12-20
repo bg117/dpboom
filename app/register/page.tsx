@@ -1,4 +1,4 @@
-import RegisterComponent from "@/components/registerComponent";
+import RegisterComponent from '@/components/registerComponent';
 
 export default function Register() {
     return <RegisterComponent />;
@@ -6,5 +6,5 @@ export default function Register() {
 
 export const metadata = {
     title: 'Register | dpBoom!',
-    description: 'Register to dpBoom!',
-}
+    description: 'Register to dpBoom!'
+};
