@@ -24,6 +24,7 @@ export default function SlugComponent({slug}: { slug: string}) {
     const [offsetTop, setOffsetTop] = useState(0);
     const [rotate, setRotate] = useState(0);
     const [scaleFactor, setScaleFactor] = useState(0);
+    const [copied, setCopied] = useState(false);
 
     const repaint = useRef(true);
     const setUpDone = useRef(false);
@@ -38,6 +39,7 @@ export default function SlugComponent({slug}: { slug: string}) {
         }
 
         await navigator.clipboard.writeText(data.caption);
+        setCopied(true);
     }, [data]);
 
     const inputOnChange = useCallback((e: any) => {
@@ -260,7 +262,9 @@ export default function SlugComponent({slug}: { slug: string}) {
             <Col md={8} className="d-flex flex-column">
                 <h6 className="text-muted">Caption</h6>
                 <FormControl as="textarea" readOnly value={data!.caption!} className="mb-2" rows={10}/>
-                <Button variant="outline-secondary" onClick={copyClick}>Copy</Button>
+                <Button variant="outline-secondary" onClick={copyClick}>
+                    {copied ? "Copied!" : "Copy"}
+                </Button>
             </Col>
         </Row>
         <hr/>
