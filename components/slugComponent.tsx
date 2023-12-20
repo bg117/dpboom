@@ -36,6 +36,12 @@ type ImageDisplayComponentProps = {
     onDownloadClick: () => void;
 };
 
+type CaptionDisplayComponentProps = {
+    caption: string;
+    hasCopied: boolean;
+    onCopyClick: () => void;
+};
+
 export default function SlugComponent({ slug }: { slug: string }) {
     const dOffset = 50;
     const dRotate = 15;
@@ -261,16 +267,11 @@ export default function SlugComponent({ slug }: { slug: string }) {
                 </Col>
                 <Col md={8} className="d-flex flex-column">
                     <h6 className="text-muted">Caption</h6>
-                    <FormControl
-                        as="textarea"
-                        readOnly
-                        value={data.caption!}
-                        className="mb-2"
-                        rows={10}
+                    <CaptionDisplayComponent
+                        caption={data.caption!}
+                        hasCopied={hasCopied}
+                        onCopyClick={copyClick}
                     />
-                    <Button variant="outline-secondary" onClick={copyClick}>
-                        {hasCopied ? 'Copied!' : 'Copy'}
-                    </Button>
                 </Col>
             </Row>
             <hr />
@@ -430,6 +431,25 @@ function ImageDisplayComponent(props: ImageDisplayComponentProps) {
                     </Button>
                 </div>
             </div>
+        </>
+    );
+}
+
+function CaptionDisplayComponent(props: CaptionDisplayComponentProps) {
+    const { caption, hasCopied, onCopyClick } = props;
+
+    return (
+        <>
+            <FormControl
+                as="textarea"
+                readOnly
+                value={caption}
+                className="mb-2"
+                rows={10}
+            />
+            <Button variant="outline-secondary" onClick={onCopyClick}>
+                {hasCopied ? 'Copied!' : 'Copy'}
+            </Button>
         </>
     );
 }
