@@ -1,22 +1,35 @@
-'use client'
+'use client';
 
-import {useGetEvent} from "@/hooks/events";
-import {useCallback, useEffect, useRef, useState} from "react";
-import {Content} from "@/components/content";
-import {Button, Col, FormControl, Image as Im, Row} from "react-bootstrap";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { useGetEvent } from '@/hooks/events';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Content } from '@/components/content';
+import { Button, Col, FormControl, Image as Im, Row } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCaretDown,
     faCaretLeft,
     faCaretRight,
-    faCaretUp, faMaximize, faMinimize,
+    faCaretUp,
+    faMaximize,
+    faMinimize,
     faRotateLeft,
     faRotateRight
-} from "@fortawesome/free-solid-svg-icons";
-import {faFacebook, faTwitter} from "@fortawesome/free-brands-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
+import { faFacebook, faTwitter } from '@fortawesome/free-brands-svg-icons';
 
-export default function SlugComponent({slug}: { slug: string}) {
-    const {data, isLoading, isError, error} = useGetEvent(slug);
+type ImageControlComponentProps = {
+    onMoveLeftClick: () => void;
+    onMoveUpClick: () => void;
+    onMoveDownClick: () => void;
+    onMoveRightClick: () => void;
+    onRotateLeftClick: () => void;
+    onRotateRightClick: () => void;
+    onZoomInClick: () => void;
+    onZoomOutClick: () => void;
+};
+
+export default function SlugComponent({ slug }: { slug: string }) {
+    const { data, isLoading, isError, error } = useGetEvent(slug);
     const [imgSrc, setImgSrc] = useState<string>(data?.frame ?? '');
     const [img, setImg] = useState<HTMLImageElement | null>(null);
     const [frame, setFrame] = useState<HTMLImageElement | null>(null);
@@ -28,9 +41,9 @@ export default function SlugComponent({slug}: { slug: string}) {
 
     const repaint = useRef(true);
     const setUpDone = useRef(false);
-    const canvasRef = useRef(document.createElement("canvas"));
-    const inputRef = useRef(document.createElement("input"));
-    const aRef = useRef(document.createElement("a"));
+    const canvasRef = useRef(document.createElement('canvas'));
+    const inputRef = useRef(document.createElement('input'));
+    const aRef = useRef(document.createElement('a'));
     const ctx = useRef(canvasRef.current.getContext('2d')!);
 
     const copyClick = useCallback(async () => {
@@ -45,7 +58,7 @@ export default function SlugComponent({slug}: { slug: string}) {
     const inputOnChange = useCallback((e: any) => {
         const file = (e.target as HTMLInputElement).files![0];
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = e => {
             const img = new Image();
             img.src = e.target!.result as string;
             img.onload = () => {
@@ -54,7 +67,7 @@ export default function SlugComponent({slug}: { slug: string}) {
                 setOffsetTop(0);
                 setRotate(0);
                 setImg(img);
-            }
+            };
         };
         reader.readAsDataURL(file);
     }, []);
@@ -110,7 +123,12 @@ export default function SlugComponent({slug}: { slug: string}) {
         repaint.current = false;
 
         // clear canvas
-        ctx.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        ctx.current.clearRect(
+            0,
+            0,
+            canvasRef.current.width,
+            canvasRef.current.height
+        );
 
         // draw img in the center of the canvas
         const x = (frame.width - img.width) / 2 + offsetLeft;
@@ -118,11 +136,13 @@ export default function SlugComponent({slug}: { slug: string}) {
         const centerX = frame.width / 2;
         const centerY = frame.height / 2;
         // zoom img to fit frame
-        const scale = Math.max(frame.width / img.width, frame.height / img.height) + scaleFactor;
+        const scale =
+            Math.max(frame.width / img.width, frame.height / img.height) +
+            scaleFactor;
         // draw img on canvas
         ctx.current.save();
         ctx.current.translate(centerX, centerY); // translate to center of canvas
-        ctx.current.rotate(rotate * Math.PI / 180); // rotate by radians
+        ctx.current.rotate((rotate * Math.PI) / 180); // rotate by radians
         ctx.current.scale(scale, scale); // scale
         ctx.current.translate(-centerX, -centerY); // translate back
         ctx.current.drawImage(img, x, y); // draw img
@@ -141,29 +161,56 @@ export default function SlugComponent({slug}: { slug: string}) {
     const dRotate = 15;
     const dScale = 0.1;
 
-    const moveOffset = useCallback((x: number, y: number) => {
-        repaint.current = true;
-        setOffsetLeft(offsetLeft + x);
-        setOffsetTop(offsetTop + y);
-    }, [offsetLeft, offsetTop]);
+    const moveOffset = useCallback(
+        (x: number, y: number) => {
+            repaint.current = true;
+            setOffsetLeft(offsetLeft + x);
+            setOffsetTop(offsetTop + y);
+        },
+        [offsetLeft, offsetTop]
+    );
 
-    const rotateOffset = useCallback((r: number) => {
-        repaint.current = true;
-        setRotate(rotate + r);
-    }, [rotate]);
+    const rotateOffset = useCallback(
+        (r: number) => {
+            repaint.current = true;
+            setRotate(rotate + r);
+        },
+        [rotate]
+    );
 
-    const zoomOffset = useCallback((s: number) => {
-        repaint.current = true;
-        setScaleFactor(scaleFactor + s);
-    }, [scaleFactor]);
+    const zoomOffset = useCallback(
+        (s: number) => {
+            repaint.current = true;
+            setScaleFactor(scaleFactor + s);
+        },
+        [scaleFactor]
+    );
 
-    const moveLeftClick = useCallback(() => moveOffset(-dOffset, 0), [moveOffset]);
-    const moveUpClick = useCallback(() => moveOffset(0, -dOffset), [moveOffset]);
-    const moveDownClick = useCallback(() => moveOffset(0, dOffset), [moveOffset]);
-    const moveRightClick = useCallback(() => moveOffset(dOffset, 0), [moveOffset]);
+    const moveLeftClick = useCallback(
+        () => moveOffset(-dOffset, 0),
+        [moveOffset]
+    );
+    const moveUpClick = useCallback(
+        () => moveOffset(0, -dOffset),
+        [moveOffset]
+    );
+    const moveDownClick = useCallback(
+        () => moveOffset(0, dOffset),
+        [moveOffset]
+    );
+    const moveRightClick = useCallback(
+        () => moveOffset(dOffset, 0),
+        [moveOffset]
+    );
 
-    const rotateLeftClick = useCallback(() => rotateOffset(-dRotate), [rotateOffset]);
-    const rotateRightClick = useCallback(() => rotateOffset(dRotate), [rotateOffset]);
+    const rotateLeftClick = useCallback(
+        () => rotateOffset(-dRotate),
+        [rotateOffset]
+    );
+    const rotateRightClick = useCallback(
+        () => rotateOffset(dRotate),
+        [rotateOffset]
+    );
 
     const zoomInClick = useCallback(() => zoomOffset(dScale), [zoomOffset]);
     const zoomOutClick = useCallback(() => zoomOffset(-dScale), [zoomOffset]);
@@ -174,111 +221,203 @@ export default function SlugComponent({slug}: { slug: string}) {
     }, [setUp, setUpImg]);
 
     if (isLoading) {
-        return <Content>
-            <h1>Loading...</h1>
-        </Content>;
+        return (
+            <Content>
+                <h1>Loading...</h1>
+            </Content>
+        );
     }
 
     if (isError) {
-        return <Content>
-            <h1>Error</h1>
-            <p>{error?.message}</p>
-        </Content>;
+        return (
+            <Content>
+                <h1>Error</h1>
+                <p>{error?.message}</p>
+            </Content>
+        );
     }
 
     if (!data) {
-        return <Content>
-            <h1>Not Found</h1>
-            <p>The event you are looking for does not exist.</p>
-        </Content>;
+        return (
+            <Content>
+                <h1>Not Found</h1>
+                <p>The event you are looking for does not exist.</p>
+            </Content>
+        );
     }
 
-    return <Content>
-        <h1>{data.name}</h1>
+    return (
+        <Content>
+            <h1>{data.name}</h1>
 
-        {/* readonly textarea filled with caption with copy button */}
-        <Row className="g-4">
-            <Col md={4}>
-                <h6 className="text-muted">Frame</h6>
+            {/* readonly textarea filled with caption with copy button */}
+            <Row className="g-4">
+                <Col md={4}>
+                    <h6 className="text-muted">Frame</h6>
 
-                <Im fluid src={imgSrc} alt="frame" className="mb-2"/>
+                    <Im fluid src={imgSrc} alt="frame" className="mb-2" />
 
-                <div className="d-flex gap-2 flex-column">
-                    {img && <>
-                        <Row className="g-1">
-                            <Col>
-                                <Button variant="secondary" className="w-100" onClick={moveLeftClick}>
-                                    <FontAwesomeIcon icon={faCaretLeft}/>
-                                </Button>
-                            </Col>
-                            <Col>
-                                <Button variant="secondary" className="w-100" onClick={moveUpClick}>
-                                    <FontAwesomeIcon icon={faCaretUp}/>
-                                </Button>
-                            </Col>
-                            <Col>
-                                <Button variant="secondary" className="w-100" onClick={moveDownClick}>
-                                    <FontAwesomeIcon icon={faCaretDown}/>
-                                </Button>
-                            </Col>
-                            <Col>
-                                <Button variant="secondary" className="w-100" onClick={moveRightClick}>
-                                    <FontAwesomeIcon icon={faCaretRight}/>
-                                </Button>
-                            </Col>
-                        </Row>
-                        <Row className="g-1">
-                            <Col>
-                                <Button variant="outline-secondary" className="w-100" onClick={rotateLeftClick}>
-                                    <FontAwesomeIcon icon={faRotateLeft}/>
-                                </Button>
-                            </Col>
-                            <Col>
-                                <Button variant="outline-secondary" className="w-100" onClick={rotateRightClick}>
-                                    <FontAwesomeIcon icon={faRotateRight}/>
-                                </Button>
-                            </Col>
-                            <Col>
-                                <Button variant="outline-secondary" className="w-100" onClick={zoomInClick}>
-                                    <FontAwesomeIcon icon={faMaximize} />
-                                </Button>
-                            </Col>
-                            <Col>
-                                <Button variant="outline-secondary" className="w-100" onClick={zoomOutClick}>
-                                    <FontAwesomeIcon icon={faMinimize} />
-                                </Button>
-                            </Col>
-                        </Row>
-                    </>}
-                    <div className="d-flex gap-2 flex-column flex-sm-row">
-                        <Button variant="secondary" className="w-100" onClick={uploadClick}>Upload</Button>
-                        <Button variant="outline-secondary" className="w-100" disabled={!img} onClick={downloadClick}>
-                            Download
-                        </Button>
+                    <div className="d-flex gap-2 flex-column">
+                        {img && (
+                            <ImageControlComponent
+                                onMoveLeftClick={moveLeftClick}
+                                onMoveUpClick={moveUpClick}
+                                onMoveDownClick={moveDownClick}
+                                onMoveRightClick={moveRightClick}
+                                onRotateLeftClick={rotateLeftClick}
+                                onRotateRightClick={rotateRightClick}
+                                onZoomInClick={zoomInClick}
+                                onZoomOutClick={zoomOutClick}
+                            />
+                        )}
+                        <div className="d-flex gap-2 flex-column flex-sm-row">
+                            <Button
+                                variant="secondary"
+                                className="w-100"
+                                onClick={uploadClick}
+                            >
+                                Upload
+                            </Button>
+                            <Button
+                                variant="outline-secondary"
+                                className="w-100"
+                                disabled={!img}
+                                onClick={downloadClick}
+                            >
+                                Download
+                            </Button>
+                        </div>
                     </div>
-                </div>
-
-            </Col>
-            <Col md={8} className="d-flex flex-column">
-                <h6 className="text-muted">Caption</h6>
-                <FormControl as="textarea" readOnly value={data!.caption!} className="mb-2" rows={10}/>
-                <Button variant="outline-secondary" onClick={copyClick}>
-                    {copied ? "Copied!" : "Copy"}
+                </Col>
+                <Col md={8} className="d-flex flex-column">
+                    <h6 className="text-muted">Caption</h6>
+                    <FormControl
+                        as="textarea"
+                        readOnly
+                        value={data!.caption!}
+                        className="mb-2"
+                        rows={10}
+                    />
+                    <Button variant="outline-secondary" onClick={copyClick}>
+                        {copied ? 'Copied!' : 'Copy'}
+                    </Button>
+                </Col>
+            </Row>
+            <hr />
+            <h5>Share this Event</h5>
+            <p>Share this event with your friends and family!</p>
+            <div className="d-flex gap-2">
+                <Button
+                    variant="outline-primary"
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                        window.location.href
+                    )}`}
+                >
+                    <FontAwesomeIcon icon={faFacebook} />
                 </Button>
-            </Col>
-        </Row>
-        <hr/>
-        <h5>Share this Event</h5>
-        <p>Share this event with your friends and family!</p>
-        <div className="d-flex gap-2">
-            <Button variant="outline-primary"
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}>
-                <FontAwesomeIcon icon={faFacebook} />
-            </Button>
-            <Button variant="outline-primary"
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data!.caption!)}&url=${encodeURIComponent(window.location.href)}`}>
-                <FontAwesomeIcon icon={faTwitter} />
-            </Button>
-        </div>
-    </Content>;
+                <Button
+                    variant="outline-primary"
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                        data!.caption!
+                    )}&url=${encodeURIComponent(window.location.href)}`}
+                >
+                    <FontAwesomeIcon icon={faTwitter} />
+                </Button>
+            </div>
+        </Content>
+    );
+}
+
+function ImageControlComponent(props: ImageControlComponentProps) {
+    const {
+        onMoveLeftClick: moveLeftClick,
+        onMoveUpClick: moveUpClick,
+        onMoveDownClick: moveDownClick,
+        onMoveRightClick: moveRightClick,
+        onRotateLeftClick: rotateLeftClick,
+        onRotateRightClick: rotateRightClick,
+        onZoomInClick: zoomInClick,
+        onZoomOutClick: zoomOutClick
+    } = props;
+
+    return (
+        <>
+            <Row className="g-1">
+                <Col>
+                    <Button
+                        variant="secondary"
+                        className="w-100"
+                        onClick={moveLeftClick}
+                    >
+                        <FontAwesomeIcon icon={faCaretLeft} />
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        variant="secondary"
+                        className="w-100"
+                        onClick={moveUpClick}
+                    >
+                        <FontAwesomeIcon icon={faCaretUp} />
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        variant="secondary"
+                        className="w-100"
+                        onClick={moveDownClick}
+                    >
+                        <FontAwesomeIcon icon={faCaretDown} />
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        variant="secondary"
+                        className="w-100"
+                        onClick={moveRightClick}
+                    >
+                        <FontAwesomeIcon icon={faCaretRight} />
+                    </Button>
+                </Col>
+            </Row>
+            <Row className="g-1">
+                <Col>
+                    <Button
+                        variant="outline-secondary"
+                        className="w-100"
+                        onClick={rotateLeftClick}
+                    >
+                        <FontAwesomeIcon icon={faRotateLeft} />
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        variant="outline-secondary"
+                        className="w-100"
+                        onClick={rotateRightClick}
+                    >
+                        <FontAwesomeIcon icon={faRotateRight} />
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        variant="outline-secondary"
+                        className="w-100"
+                        onClick={zoomInClick}
+                    >
+                        <FontAwesomeIcon icon={faMaximize} />
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        variant="outline-secondary"
+                        className="w-100"
+                        onClick={zoomOutClick}
+                    >
+                        <FontAwesomeIcon icon={faMinimize} />
+                    </Button>
+                </Col>
+            </Row>
+        </>
+    );
 }

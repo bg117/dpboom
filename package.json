@@ -27,6 +27,7 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "prettier-config-generator": "^1.1.6",
     "sass": "^1.69.5",
     "supabase": "^1.115.5",
     "typescript": "^5"
