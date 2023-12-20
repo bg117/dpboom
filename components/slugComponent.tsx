@@ -245,6 +245,7 @@ export default function SlugComponent({ slug }: { slug: string }) {
     return (
         <Content>
             <h1>{data.name}</h1>
+            <h6 className="text-muted mb-4">by {data.display_name}</h6>
 
             {/* readonly textarea filled with caption with copy button */}
             <Row className="g-4">
