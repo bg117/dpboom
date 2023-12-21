@@ -32,6 +32,7 @@ type ImageControlComponentProps = {
 type ImageDisplayComponentProps = {
     src: string;
     controlComponentVisible: boolean;
+    downloadEnabled: boolean;
     ImageControlComponentProps: ImageControlComponentProps;
     onUploadClick: () => void;
     onDownloadClick: () => void;
@@ -254,6 +255,7 @@ export default function SlugComponent({ slug }: { slug: string }) {
                     <ImageDisplayComponent
                         src={imgSrc}
                         controlComponentVisible={!!img}
+                        downloadEnabled={!!img}
                         ImageControlComponentProps={{
                             onMoveLeftClick: moveLeftClick,
                             onMoveUpClick: moveUpClick,
@@ -410,7 +412,8 @@ function ImageDisplayComponent(props: ImageDisplayComponentProps) {
         ImageControlComponentProps,
         onUploadClick,
         onDownloadClick,
-        controlComponentVisible
+        controlComponentVisible,
+        downloadEnabled
     } = props;
 
     return (
@@ -432,6 +435,7 @@ function ImageDisplayComponent(props: ImageDisplayComponentProps) {
                         variant="outline-secondary"
                         className="w-100"
                         onClick={onDownloadClick}
+                        disabled={!downloadEnabled}
                     >
                         Download
                     </Button>
